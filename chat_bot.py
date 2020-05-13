@@ -35,7 +35,7 @@ def conversation(message):
                 bot.send_message(message.chat.id, 'Now in ' + message.text.title() + ' ' + temperature)
         else:
             bot.send_message(message.chat.id,
-                             'Cannot find that town ' + message.text.title() + '\nPlease try another city')
+                             'Cannot find that city ' + message.text.title() + '\nPlease try another city')
 
 
 # RUN
