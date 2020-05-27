@@ -2,3 +2,8 @@ venv
 /venv
 .idea
 /dictionary_russian_cities.py
+/chat_bot_black_list.py
+/config.py
+/world_cities.txt
+/russian_cities.txt
+/rorry-telegram-bot.pem
