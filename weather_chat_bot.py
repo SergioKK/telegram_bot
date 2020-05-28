@@ -53,11 +53,14 @@ def translator_from_eng(my_list):
     translated_message_list = []
     translator = Translator(to_lang="Russian")
     for word in my_list:
-        if detect(word) == "ru":
-            translated_message_list.append(word)
-        else:
-            translation = translator.translate(word)
-            translated_message_list.append(translation)
+        try:
+            if detect(word) == "ru":
+                translated_message_list.append(word)
+            else:
+                translation = translator.translate(word)
+                translated_message_list.append(translation)
+        except:
+            return my_list
     return translated_message_list
 
 
