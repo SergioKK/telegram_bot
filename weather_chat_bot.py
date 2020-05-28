@@ -11,13 +11,8 @@ from translate import Translator
 
 bot = telebot.TeleBot(config.TOKEN)
 
-date = datetime.date.today()
-
-day = date.day
-month = date.month
-year = date.year
-
 cities_list = []
+
 with open("world_cities_sinoptik_use.txt", "r") as file:
     for item in file:
         cities_list.append(item.split()[0])
@@ -85,6 +80,13 @@ def levenshtein_distance(my_list):
 
 @bot.message_handler(content_types=["text"])
 def conversation(message):
+
+    date = datetime.date.today()
+
+    day = date.day
+    month = date.month
+    year = date.year
+
     message_text = message.text.split()
 
     text_without_punctuation = delete_punctuation(message_text)
@@ -127,9 +129,11 @@ def conversation(message):
                 )
             elif r.status_code == 200 and checked_text_on_mistakes[0] == "сейчас":
                 temperature = html.select("#content")[0].select(".today-temp")[0].text
+                description = html.select("#content")[0].select(".description")[0].text
                 bot.send_message(
                     message.chat.id,
-                    f"Сейчас в {checked_text_on_mistakes[1].title()} {temperature}",
+                    f"Сейчас в {checked_text_on_mistakes[1].title()} {temperature}\n\n"
+                    f"{description[2:]}",
                 )
         except:
             bot.send_message(
