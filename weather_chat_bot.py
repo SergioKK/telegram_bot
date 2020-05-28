@@ -1,5 +1,5 @@
 import datetime
-import random
+from langdetect import detect
 import string
 import telebot
 import config
@@ -31,7 +31,7 @@ def welcome(message):
         message.chat.id,
         "Привет, {0.first_name}!\n"
         "Я - <b>{1.first_name}</b>.\n"
-        "Напиши мне название города и когда ты хочешь узнать погоду".format(
+        "Напишите мне название города и когда вы хотите узнать погоду".format(
             message.from_user, bot.get_me()
         ),
         parse_mode="html",
@@ -53,8 +53,11 @@ def translator_from_eng(my_list):
     translated_message_list = []
     translator = Translator(to_lang="Russian")
     for word in my_list:
-        translation = translator.translate(word)
-        translated_message_list.append(translation)
+        if detect(word) == "ru":
+            translated_message_list.append(word)
+        else:
+            translation = translator.translate(word)
+            translated_message_list.append(translation)
     return translated_message_list
 
 
@@ -73,9 +76,12 @@ def levenshtein_distance(my_list):
                 similarity = 1 - dist / l
                 if similarity == 1:
                     new_message_list.insert(0, world_2.lower())
-                elif similarity > 0.74:
+                elif similarity > levenshtein_distance_threshold:
                     new_message_list.append(world_2.lower())
-    return new_message_list
+    if len(new_message_list) >= 2:
+        return new_message_list
+    else:
+        return list(reversed(my_list))
 
 
 @bot.message_handler(content_types=["text"])
@@ -129,17 +135,21 @@ def conversation(message):
                 )
             elif r.status_code == 200 and checked_text_on_mistakes[0] == "сейчас":
                 temperature = html.select("#content")[0].select(".today-temp")[0].text
-                description = html.select("#content")[0].select(".description")[0].text
+                description = html.select("#content")[0].select(".description")[-2].text
                 bot.send_message(
                     message.chat.id,
                     f"Сейчас в {checked_text_on_mistakes[1].title()} {temperature}\n\n"
                     f"{description[2:]}",
                 )
+            elif r.status_code == 404:
+                bot.send_message(
+                    message.chat.id,
+                    f"Не могу найти город {translated_text[0].title()}\n"
+                    f"Попробуйте другой город")
         except:
             bot.send_message(
                 message.chat.id,
-                f"Не могу найти {translated_text[0].title()}\n"
-                f"Попробуйте другой город или в другом формате\n"
+                f"Я вас не понимаю, попробуйте в другом формате\n"
                 f"Например: <город> <сейчас, сегодня или завтра>",
             )
 
