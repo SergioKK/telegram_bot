@@ -27,7 +27,7 @@ pre-commit==2.4.0
 py==1.10.0
 pyparsing==2.4.7
 pyTelegramBotAPI==3.6.7
-PyYAML==5.3.1
+PyYAML==5.4
 regex==2020.5.14
 requests==2.23.0
 six==1.14.0
